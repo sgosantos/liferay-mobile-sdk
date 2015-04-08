@@ -17,6 +17,7 @@ package com.liferay.mobile.android.util;
 import android.util.Base64;
 import android.util.Log;
 
+import com.liferay.mobile.android.http.HttpStatus;
 import com.liferay.mobile.android.http.HttpUtil;
 import com.liferay.mobile.android.service.Session;
 
@@ -32,7 +33,6 @@ import java.security.MessageDigest;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 
@@ -69,7 +69,7 @@ public class PortraitUtil {
 
 			int status = response.getStatusLine().getStatusCode();
 
-			if (status == HttpStatus.SC_OK) {
+			if (status == HttpStatus.OK) {
 				is = response.getEntity().getContent();
 
 				int count;

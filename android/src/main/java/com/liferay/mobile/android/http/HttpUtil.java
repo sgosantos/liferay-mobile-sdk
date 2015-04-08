@@ -28,17 +28,11 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
-import java.net.URI;
-
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.ProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.entity.ContentType;
@@ -49,8 +43,6 @@ import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,25 +62,24 @@ public class HttpUtil {
 
 	public static final String LAST_MODIFIED = "Last-Modified";
 
-	public static void checkStatusCode(
-			HttpRequest request, HttpResponse response)
+	public static void checkStatusCode(Response response)
 		throws ServerException {
 
-		int status = response.getStatusLine().getStatusCode();
+		int status = response.code();
 
-		if ((status == HttpStatus.SC_MOVED_PERMANENTLY) ||
-			(status == HttpStatus.SC_MOVED_TEMPORARILY) ||
-			(status == HttpStatus.SC_SEE_OTHER) ||
-			(status == HttpStatus.SC_TEMPORARY_REDIRECT)) {
+		if ((status == HttpStatus.MOVED_PERMANENTLY) ||
+			(status == HttpStatus.MOVED_TEMPORARILY) ||
+			(status == HttpStatus.SEE_OTHER) ||
+			(status == HttpStatus.TEMPORARY_REDIRECT)) {
 
-			throw new RedirectException(getRedirectUrl(request, response));
+			throw new RedirectException(getRedirectUrl(response));
 		}
 
-		if (status == HttpStatus.SC_UNAUTHORIZED) {
+		if (status == HttpStatus.UNAUTHORIZED) {
 			throw new ServerException("Authentication failed.");
 		}
 
-		if (status != HttpStatus.SC_OK) {
+		if (status != HttpStatus.OK) {
 			throw new ServerException(
 				"Request failed. Response code: " + status);
 		}
@@ -174,7 +165,7 @@ public class HttpUtil {
 		Response response = client.newCall(request).execute();
 		String json = response.body().string();
 
-		//handleServerError(request, response, json);
+		handleServerError(response, json);
 
 		return new JSONArray(json);
 	}
@@ -216,8 +207,7 @@ public class HttpUtil {
 		Response response = client.newCall(request).execute();
 		String json = response.body().string();
 
-		//TODO Handle exception
-		//handleServerError(request, response, json);
+		handleServerError(response, json);
 
 		return new JSONArray("[" + json + "]");
 	}
@@ -262,26 +252,15 @@ public class HttpUtil {
 		return builder.build();
 	}
 
-	protected static String getRedirectUrl(
-			HttpRequest request, HttpResponse response)
-		throws ServerException {
+	protected static String getRedirectUrl(Response response) {
 
-		try {
-			DefaultRedirectStrategy redirect = new DefaultRedirectStrategy();
-			HttpContext context = new BasicHttpContext();
+		String url = response.header("location");
 
-			URI uri = redirect.getLocationURI(request, response, context);
-			String url = uri.toString();
-
-			if (url.endsWith("/")) {
-				url = url.substring(0, url.length() - 1);
-			}
-
-			return url;
+		if (url.endsWith("/")) {
+			url = url.substring(0, url.length() - 1);
 		}
-		catch (ProtocolException pe) {
-			throw new ServerException(pe);
-		}
+
+		return url;
 	}
 
 	protected static void handlePortalException(String json)
@@ -311,11 +290,10 @@ public class HttpUtil {
 		}
 	}
 
-	protected static void handleServerError(
-			HttpRequest request, HttpResponse response, String json)
+	protected static void handleServerError(Response response, String json)
 		throws ServerException {
 
-		checkStatusCode(request, response);
+		checkStatusCode(response);
 		handlePortalException(json);
 	}
 
