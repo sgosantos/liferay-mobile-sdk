@@ -18,13 +18,11 @@ import com.liferay.mobile.android.http.HttpUtil;
 import com.liferay.mobile.android.service.Session;
 import com.liferay.mobile.android.v62.portal.PortalService;
 
-import java.io.IOException;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.DefaultHttpClient;
+import java.io.IOException;
 
 /**
  * @author Bruno Farache
@@ -66,25 +64,27 @@ public class PortalVersionUtil {
 	}
 
 	protected static int getBuilderNumberHeader(String url) throws IOException {
-		HttpClient client = new DefaultHttpClient();
-		HttpHead head = new HttpHead(url);
-		HttpResponse response = client.execute(head);
+		OkHttpClient client = new OkHttpClient();
+		Request request = new Request.Builder()
+			.head()
+			.url(url)
+			.build();
 
-		Header portalHeader = response.getFirstHeader("Liferay-Portal");
+		Response response = client.newCall(request).execute();
+
+		String portalHeader = response.header("Liferay-Portal");
 
 		if (portalHeader == null) {
 			return PortalVersion.UNKNOWN;
 		}
 
-		String portalField = portalHeader.getValue();
-
-		int indexOfBuild = portalField.indexOf("Build");
+		int indexOfBuild = portalHeader.indexOf("Build");
 
 		if (indexOfBuild == -1) {
 			return PortalVersion.UNKNOWN;
 		}
 		else {
-			String buildNumber = portalField.substring(
+			String buildNumber = portalHeader.substring(
 				indexOfBuild + 6, indexOfBuild + 10);
 
 			return Integer.valueOf(buildNumber);
