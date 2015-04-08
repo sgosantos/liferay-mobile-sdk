@@ -22,11 +22,16 @@ import com.liferay.mobile.android.service.Session;
 import com.liferay.mobile.android.task.UploadAsyncTask;
 import com.liferay.mobile.android.util.Validator;
 
-import java.io.IOException;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 import java.net.URI;
 
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
@@ -36,9 +41,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.ProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
@@ -48,7 +51,6 @@ import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -117,26 +119,32 @@ public class HttpUtil {
 		return clientBuilder;
 	}
 
-	public static HttpPost getHttpPost(Session session, String URL)
+	public static Request getHttpPost(Session session, String URL, String body)
 		throws Exception {
 
-		HttpPost httpPost = new HttpPost(URL);
+		MediaType type = MediaType.parse("application/json; charset=utf-8");
+		RequestBody requestBody = RequestBody.create(type, body);
 
-		authenticate(session, httpPost);
+		Request.Builder builder = new Request.Builder()
+			.url(URL)
+			.post(requestBody);
 
-		return httpPost;
+		authenticate(session, builder);
+
+		return builder.build();
 	}
 
-	public static String getResponseString(HttpResponse response)
-		throws IOException {
+	public static OkHttpClient getOkHttpClient(Session session) {
+		OkHttpClient client = new OkHttpClient();
 
-		HttpEntity entity = response.getEntity();
+		int timeout = session.getConnectionTimeout();
+		client.setConnectTimeout(timeout, TimeUnit.MILLISECONDS);
+		client.setReadTimeout(timeout, TimeUnit.MILLISECONDS);
+		client.setWriteTimeout(timeout, TimeUnit.MILLISECONDS);
 
-		if (entity == null) {
-			return null;
-		}
+		client.setFollowRedirects(false);
 
-		return EntityUtils.toString(entity);
+		return client;
 	}
 
 	public static String getURL(Session session, String path) {
@@ -159,15 +167,14 @@ public class HttpUtil {
 	public static JSONArray post(Session session, JSONArray commands)
 		throws Exception {
 
-		HttpClient client = getClient(session);
-		HttpPost request = getHttpPost(session, getURL(session, "/invoke"));
+		OkHttpClient client = getOkHttpClient(session);
+		Request request = getHttpPost(
+			session, getURL(session, "/invoke"), commands.toString());
 
-		request.setEntity(new StringEntity(commands.toString(), "UTF-8"));
+		Response response = client.newCall(request).execute();
+		String json = response.body().string();
 
-		HttpResponse response = client.execute(request);
-		String json = HttpUtil.getResponseString(response);
-
-		handleServerError(request, response, json);
+		//handleServerError(request, response, json);
 
 		return new JSONArray(json);
 	}
@@ -193,8 +200,9 @@ public class HttpUtil {
 		String path = (String)command.keys().next();
 		JSONObject parameters = command.getJSONObject(path);
 
-		HttpClient client = getClient(session);
-		HttpPost request = getHttpPost(session, getURL(session, path));
+		OkHttpClient client = getOkHttpClient(session);
+		Request request = getHttpPost(
+			session, getURL(session, path), command.toString());
 
 		HttpEntity entity = getMultipartEntity(parameters);
 
@@ -202,23 +210,25 @@ public class HttpUtil {
 			entity = new CountingHttpEntity(entity, task);
 		}
 
-		request.setEntity(entity);
+		//TODO set Counting Http Entity
+		//request.setEntity(entity);
 
-		HttpResponse response = client.execute(request);
-		String json = HttpUtil.getResponseString(response);
+		Response response = client.newCall(request).execute();
+		String json = response.body().string();
 
-		handleServerError(request, response, json);
+		//TODO Handle exception
+		//handleServerError(request, response, json);
 
 		return new JSONArray("[" + json + "]");
 	}
 
-	protected static void authenticate(Session session, HttpRequest request)
+	protected static void authenticate(Session session, Request.Builder builder)
 		throws Exception {
 
 		Authentication authentication = session.getAuthentication();
 
 		if (authentication != null) {
-			authentication.authenticate(request);
+			authentication.authenticate(builder);
 		}
 	}
 

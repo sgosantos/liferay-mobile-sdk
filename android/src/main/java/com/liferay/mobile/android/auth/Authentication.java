@@ -14,13 +14,13 @@
 
 package com.liferay.mobile.android.auth;
 
-import org.apache.http.HttpRequest;
+import com.squareup.okhttp.Request;
 
 /**
  * @author Bruno Farache
  */
 public interface Authentication {
 
-	public void authenticate(HttpRequest request) throws Exception;
+	public void authenticate(Request.Builder builder) throws Exception;
 
 }

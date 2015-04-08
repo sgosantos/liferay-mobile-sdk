@@ -16,10 +16,8 @@ package com.liferay.mobile.android.auth.basic;
 
 import com.liferay.mobile.android.auth.Authentication;
 
-import org.apache.http.Header;
-import org.apache.http.HttpRequest;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.impl.auth.BasicScheme;
+import com.squareup.okhttp.Credentials;
+import com.squareup.okhttp.Request;
 
 /**
  * @author Bruno Farache
@@ -32,12 +30,10 @@ public class BasicAuthentication implements Authentication {
 	}
 
 	@Override
-	public void authenticate(HttpRequest request) {
-		UsernamePasswordCredentials credentials =
-			new UsernamePasswordCredentials(_username, _password);
+	public void authenticate(Request.Builder builder) {
+		String credentials = Credentials.basic(_username, _password);
 
-		Header header = BasicScheme.authenticate(credentials, "UTF-8", false);
-		request.addHeader(header);
+		builder.addHeader("Authorization", credentials);
 	}
 
 	public String getPassword() {
