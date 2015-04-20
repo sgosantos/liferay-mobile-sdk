@@ -28,4 +28,7 @@ public class HttpHeader {
 	public static final String LIFERAY_PORTAL = "Liferay-Portal";
 
 	public static final String LOCATION = "Location";
+
+	public static final String WWW_AUTHENTICATE = "WWW-Authenticate";
+
 }
