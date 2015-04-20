@@ -16,11 +16,13 @@ package com.liferay.mobile.android;
 
 import com.liferay.mobile.android.util.PortraitUtil;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Bruno Farache
@@ -29,6 +31,19 @@ public class PortraitTest extends BaseTest {
 
 	public PortraitTest() throws IOException {
 		super();
+	}
+
+	@Test
+	public void downloadPortrait() throws Exception {
+		long portraitId = 1708235;
+		String portraitURL = PortraitUtil.getPortraitURL(
+			session, true, portraitId, null);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		PortraitUtil.downloadPortrait(session, portraitURL, baos);
+
+		assertTrue(baos.size() > 0);
 	}
 
 	@Test

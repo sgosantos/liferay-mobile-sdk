@@ -22,6 +22,10 @@ import com.liferay.mobile.android.http.HttpStatus;
 import com.liferay.mobile.android.http.HttpUtil;
 import com.liferay.mobile.android.service.Session;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import java.io.Closeable;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,11 +35,6 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 
 import java.security.MessageDigest;
-
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 
 /**
  * @author Bruno Farache
@@ -59,19 +58,21 @@ public class PortraitUtil {
 		InputStream is = null;
 
 		try {
-			HttpGet get = new HttpGet(portraitURL);
+			Request.Builder builder = new Request.Builder()
+				.get()
+				.url(portraitURL);
 
 			if (Validator.isNotNull(modifiedDate)) {
-				get.addHeader(HttpHeader.IF_MODIFIED_SINCE, modifiedDate);
+				builder.addHeader(HttpHeader.IF_MODIFIED_SINCE, modifiedDate);
 			}
 
-			HttpClient client = HttpUtil.getClient(session);
-			HttpResponse response = client.execute(get);
+			OkHttpClient client = HttpUtil.getOkHttpClient(session);
+			Response response = client.newCall(builder.build()).execute();
 
-			int status = response.getStatusLine().getStatusCode();
+			int status = response.code();
 
 			if (status == HttpStatus.OK) {
-				is = response.getEntity().getContent();
+				is = response.body().byteStream();
 
 				int count;
 				byte data[] = new byte[8192];
@@ -80,10 +81,7 @@ public class PortraitUtil {
 					os.write(data, 0, count);
 				}
 
-				Header header = response.getLastHeader(
-					HttpHeader.LAST_MODIFIED);
-
-				lastModified = header.getValue();
+				lastModified = response.header(HttpHeader.LAST_MODIFIED);
 			}
 		}
 		catch (Exception e) {
