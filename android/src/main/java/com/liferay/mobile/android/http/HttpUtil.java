@@ -17,12 +17,12 @@ package com.liferay.mobile.android.http;
 import com.liferay.mobile.android.auth.Authentication;
 import com.liferay.mobile.android.exception.RedirectException;
 import com.liferay.mobile.android.exception.ServerException;
-import com.liferay.mobile.android.http.entity.CountingHttpEntity;
 import com.liferay.mobile.android.service.Session;
 import com.liferay.mobile.android.task.UploadAsyncTask;
 import com.liferay.mobile.android.util.Validator;
 
 import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
@@ -31,16 +31,10 @@ import com.squareup.okhttp.Response;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.Consts;
-import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.InputStreamBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 
@@ -188,19 +182,23 @@ public class HttpUtil {
 		JSONObject parameters = command.getJSONObject(path);
 
 		OkHttpClient client = getOkHttpClient(session);
-		Request request = getHttpPost(
-			session, getURL(session, path), command.toString());
 
-		HttpEntity entity = getMultipartEntity(parameters);
+		RequestBody body = getMultipartEntity(parameters);
 
-		if (task != null) {
-			entity = new CountingHttpEntity(entity, task);
-		}
+		Request.Builder builder = new Request.Builder()
+			.url(getURL(session, path))
+			.post(body);
+
+		authenticate(session, builder);
+
+//		if (task != null) {
+//			entity = new CountingHttpEntity(entity, task);
+//		}
 
 		//TODO set Counting Http Entity
 		//request.setEntity(entity);
 
-		Response response = client.newCall(request).execute();
+		Response response = client.newCall(builder.build()).execute();
 		String json = response.body().string();
 
 		handleServerError(response, json);
@@ -218,14 +216,11 @@ public class HttpUtil {
 		}
 	}
 
-	protected static HttpEntity getMultipartEntity(JSONObject parameters)
+	protected static RequestBody getMultipartEntity(JSONObject parameters)
 		throws Exception {
 
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-
-		ContentType contentType = ContentType.create(
-			"text/plain", Consts.UTF_8);
+		MultipartBuilder builder = new MultipartBuilder()
+			.type(MultipartBuilder.FORM);
 
 		Iterator<String> it = parameters.keys();
 
@@ -239,10 +234,8 @@ public class HttpUtil {
 				contentBody = (InputStreamBody)value;
 			}
 			else {
-				contentBody = new StringBody(value.toString(), contentType);
+				builder.addFormDataPart(key, value.toString());
 			}
-
-			builder.addPart(key, contentBody);
 		}
 
 		return builder.build();
