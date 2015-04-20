@@ -20,8 +20,6 @@ import com.liferay.mobile.android.v62.dlapp.DLAppService;
 
 import java.io.IOException;
 
-import org.apache.http.protocol.HTTP;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -48,7 +46,7 @@ public class DLAppServiceTest extends BaseTest {
 		DLAppService service = new DLAppService(session);
 		long repositoryId = props.getGroupId();
 
-		byte[] bytes = "Hello".getBytes(HTTP.UTF_8);
+		byte[] bytes = "Hello".getBytes("UTF-8");
 
 		return service.addFileEntry(
 			repositoryId, _PARENT_FOLDER_ID, SOURCE_FILE_NAME, _MIME_TYPE,

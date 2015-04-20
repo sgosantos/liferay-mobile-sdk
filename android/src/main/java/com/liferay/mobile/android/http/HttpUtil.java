@@ -33,11 +33,6 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.DefaultRedirectStrategy;
-import org.apache.http.impl.client.HttpClientBuilder;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,29 +70,17 @@ public class HttpUtil {
 		}
 	}
 
-	public static HttpClient getClient(Session session) {
-		return getClientBuilder(session).build();
-	}
+	public static OkHttpClient getHttpClient(Session session) {
+		OkHttpClient client = new OkHttpClient();
 
-	public static HttpClientBuilder getClientBuilder(Session session) {
-		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-
-		RequestConfig.Builder requestBuilder = RequestConfig.custom();
 		int timeout = session.getConnectionTimeout();
-		requestBuilder = requestBuilder.setConnectTimeout(timeout);
-		requestBuilder = requestBuilder.setConnectionRequestTimeout(timeout);
+		client.setConnectTimeout(timeout, TimeUnit.MILLISECONDS);
+		client.setReadTimeout(timeout, TimeUnit.MILLISECONDS);
+		client.setWriteTimeout(timeout, TimeUnit.MILLISECONDS);
 
-		clientBuilder.setDefaultRequestConfig(requestBuilder.build());
-		clientBuilder.setRedirectStrategy(new DefaultRedirectStrategy() {
+		client.setFollowRedirects(false);
 
-			@Override
-			protected boolean isRedirectable(String method) {
-				return false;
-			}
-
-		});
-
-		return clientBuilder;
+		return client;
 	}
 
 	public static Request getHttpPost(Session session, String URL, String body)
@@ -113,19 +96,6 @@ public class HttpUtil {
 		authenticate(session, builder);
 
 		return builder.build();
-	}
-
-	public static OkHttpClient getOkHttpClient(Session session) {
-		OkHttpClient client = new OkHttpClient();
-
-		int timeout = session.getConnectionTimeout();
-		client.setConnectTimeout(timeout, TimeUnit.MILLISECONDS);
-		client.setReadTimeout(timeout, TimeUnit.MILLISECONDS);
-		client.setWriteTimeout(timeout, TimeUnit.MILLISECONDS);
-
-		client.setFollowRedirects(false);
-
-		return client;
 	}
 
 	public static String getURL(Session session, String path) {
@@ -148,7 +118,7 @@ public class HttpUtil {
 	public static JSONArray post(Session session, JSONArray commands)
 		throws Exception {
 
-		OkHttpClient client = getOkHttpClient(session);
+		OkHttpClient client = getHttpClient(session);
 		Request request = getHttpPost(
 			session, getURL(session, "/invoke"), commands.toString());
 
@@ -181,7 +151,7 @@ public class HttpUtil {
 		String path = (String)command.keys().next();
 		JSONObject parameters = command.getJSONObject(path);
 
-		OkHttpClient client = getOkHttpClient(session);
+		OkHttpClient client = getHttpClient(session);
 
 		RequestBody body = getMultipartEntity(parameters);
 

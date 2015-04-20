@@ -37,7 +37,7 @@ public class DownloadUtil {
 			DownloadProgressCallback callback)
 		throws Exception {
 
-		OkHttpClient client = HttpUtil.getOkHttpClient(session);
+		OkHttpClient client = HttpUtil.getHttpClient(session);
 		client.setAuthenticator(new DigestAuthenticator(session));
 
 		Request.Builder builder = new Request.Builder()

@@ -66,7 +66,7 @@ public class PortraitUtil {
 				builder.addHeader(HttpHeader.IF_MODIFIED_SINCE, modifiedDate);
 			}
 
-			OkHttpClient client = HttpUtil.getOkHttpClient(session);
+			OkHttpClient client = HttpUtil.getHttpClient(session);
 			Response response = client.newCall(builder.build()).execute();
 
 			int status = response.code();
