@@ -153,20 +153,13 @@ public class HttpUtil {
 
 		OkHttpClient client = getHttpClient(session);
 
-		RequestBody body = getMultipartEntity(parameters);
+		RequestBody body = getUploadRequestBody(parameters, task);
 
 		Request.Builder builder = new Request.Builder()
 			.url(getURL(session, path))
 			.post(body);
 
 		authenticate(session, builder);
-
-//		if (task != null) {
-//			entity = new CountingHttpEntity(entity, task);
-//		}
-
-		//TODO set Counting Http Entity
-		//request.setEntity(entity);
 
 		Response response = client.newCall(builder.build()).execute();
 		String json = response.body().string();
@@ -186,7 +179,18 @@ public class HttpUtil {
 		}
 	}
 
-	protected static RequestBody getMultipartEntity(JSONObject parameters)
+	protected static String getRedirectUrl(Response response) {
+		String url = response.header(HttpHeader.LOCATION);
+
+		if (url.endsWith("/")) {
+			url = url.substring(0, url.length() - 1);
+		}
+
+		return url;
+	}
+
+	protected static RequestBody getUploadRequestBody(
+			JSONObject parameters, UploadAsyncTask task)
 		throws Exception {
 
 		MultipartBuilder builder = new MultipartBuilder()
@@ -205,7 +209,7 @@ public class HttpUtil {
 				String title = parameters.getString("title");
 
 				RequestBody body = InputStreamRequestBody.create(
-					MediaType.parse(mimeType), inputStream);
+					MediaType.parse(mimeType), inputStream, task);
 
 				builder.addFormDataPart(key, title, body);
 			}
@@ -215,16 +219,6 @@ public class HttpUtil {
 		}
 
 		return builder.build();
-	}
-
-	protected static String getRedirectUrl(Response response) {
-		String url = response.header(HttpHeader.LOCATION);
-
-		if (url.endsWith("/")) {
-			url = url.substring(0, url.length() - 1);
-		}
-
-		return url;
 	}
 
 	protected static void handlePortalException(String json)

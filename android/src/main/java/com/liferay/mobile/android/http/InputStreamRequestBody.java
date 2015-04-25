@@ -14,6 +14,8 @@
 
 package com.liferay.mobile.android.http;
 
+import com.liferay.mobile.android.task.UploadAsyncTask;
+
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.internal.Util;
@@ -21,6 +23,7 @@ import com.squareup.okhttp.internal.Util;
 import java.io.IOException;
 import java.io.InputStream;
 
+import okio.Buffer;
 import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
@@ -31,7 +34,8 @@ import okio.Source;
 public class InputStreamRequestBody {
 
 	public static RequestBody create(
-		final MediaType contentType, final InputStream inputStream) {
+		final MediaType contentType, final InputStream inputStream,
+		final UploadAsyncTask task) {
 
 		if (inputStream == null) {
 			throw new NullPointerException("inputStream == null");
@@ -51,7 +55,17 @@ public class InputStreamRequestBody {
 
 					try {
 						source = Okio.source(inputStream);
-						sink.writeAll(source);
+
+						long readCount;
+						Buffer buffer = new Buffer();
+
+						while ((readCount = source.read(buffer, 2048)) != -1) {
+							sink.write(buffer, readCount);
+
+							if (task != null) {
+								task.setProgress((int)readCount);
+							}
+						}
 					}
 					finally {
 						Util.closeQuietly(source);
