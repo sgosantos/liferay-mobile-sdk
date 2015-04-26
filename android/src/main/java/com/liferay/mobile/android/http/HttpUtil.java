@@ -28,13 +28,13 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import java.io.InputStream;
+
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 
@@ -228,10 +228,16 @@ public class HttpUtil {
 			String key = it.next();
 			Object value = parameters.get(key);
 
-			ContentBody contentBody;
+			if (value instanceof InputStream) {
+				InputStream inputStream = (InputStream)value;
 
-			if (value instanceof InputStreamBody) {
-				contentBody = (InputStreamBody)value;
+				String mimeType = parameters.getString("mimeType");
+				String title = parameters.getString("title");
+
+				RequestBody body = InputStreamRequestBody.create(
+					MediaType.parse(mimeType), inputStream);
+
+				builder.addFormDataPart(key, title, body);
 			}
 			else {
 				builder.addFormDataPart(key, value.toString());
