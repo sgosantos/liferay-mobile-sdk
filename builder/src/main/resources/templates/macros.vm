@@ -9,7 +9,7 @@
 		#set ($parameterType = $languageUtil.getType($parameter.type))
 		#set ($parameterList = "$parameterList$parameterType $parameterName")
 
-		#if ($parameterType == $INPUT_STREAM_BODY)
+		#if ($parameterType == $INPUT_STREAM)
 			#set ($returnType = $ASYNC_TASK)
 		#end
 

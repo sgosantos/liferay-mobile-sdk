@@ -25,8 +25,7 @@ public class JavaUtil extends LanguageUtil {
 
 	public static final String ASYNC_TASK = "android.os.AsyncTask";
 
-	public static final String INPUT_STREAM_BODY =
-		"org.apache.http.entity.mime.content.InputStreamBody";
+	public static final String INPUT_STREAM = "java.io.InputStream";
 
 	public static final String INTEGER = "Integer";
 
@@ -47,9 +46,7 @@ public class JavaUtil extends LanguageUtil {
 			return INTEGER;
 		}
 
-		if (type.equals(JSON_OBJECT_WRAPPER) ||
-			type.equals(INPUT_STREAM_BODY)) {
-
+		if (type.equals(JSON_OBJECT_WRAPPER) || type.equals(INPUT_STREAM)) {
 			return JSON_OBJECT;
 		}
 
@@ -76,7 +73,7 @@ public class JavaUtil extends LanguageUtil {
 		}
 
 		if (type.equals(FILE)) {
-			return INPUT_STREAM_BODY;
+			return INPUT_STREAM;
 		}
 
 		if (type.startsWith(OBJECT_PREFIX)) {
