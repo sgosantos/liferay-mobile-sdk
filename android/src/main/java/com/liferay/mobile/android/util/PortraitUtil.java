@@ -17,6 +17,7 @@ package com.liferay.mobile.android.util;
 import android.util.Base64;
 import android.util.Log;
 
+import com.liferay.mobile.android.http.HttpHeader;
 import com.liferay.mobile.android.http.HttpStatus;
 import com.liferay.mobile.android.http.HttpUtil;
 import com.liferay.mobile.android.service.Session;
@@ -61,7 +62,7 @@ public class PortraitUtil {
 			HttpGet get = new HttpGet(portraitURL);
 
 			if (Validator.isNotNull(modifiedDate)) {
-				get.addHeader(HttpUtil.IF_MODIFIED_SINCE, modifiedDate);
+				get.addHeader(HttpHeader.IF_MODIFIED_SINCE, modifiedDate);
 			}
 
 			HttpClient client = HttpUtil.getClient(session);
@@ -79,7 +80,9 @@ public class PortraitUtil {
 					os.write(data, 0, count);
 				}
 
-				Header header = response.getLastHeader(HttpUtil.LAST_MODIFIED);
+				Header header = response.getLastHeader(
+					HttpHeader.LAST_MODIFIED);
+
 				lastModified = header.getValue();
 			}
 		}

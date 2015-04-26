@@ -54,13 +54,9 @@ import org.json.JSONObject;
  */
 public class HttpUtil {
 
-	public static final String IF_MODIFIED_SINCE = "If-Modified-Since";
-
 	public static final String JSONWS_PATH_61 = "api/secure/jsonws";
 
 	public static final String JSONWS_PATH_62 = "api/jsonws";
-
-	public static final String LAST_MODIFIED = "Last-Modified";
 
 	public static void checkStatusCode(Response response)
 		throws ServerException {
@@ -253,8 +249,7 @@ public class HttpUtil {
 	}
 
 	protected static String getRedirectUrl(Response response) {
-
-		String url = response.header("location");
+		String url = response.header(HttpHeader.LOCATION);
 
 		if (url.endsWith("/")) {
 			url = url.substring(0, url.length() - 1);

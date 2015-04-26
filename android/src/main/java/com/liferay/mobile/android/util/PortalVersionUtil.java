@@ -14,6 +14,7 @@
 
 package com.liferay.mobile.android.util;
 
+import com.liferay.mobile.android.http.HttpHeader;
 import com.liferay.mobile.android.http.HttpUtil;
 import com.liferay.mobile.android.service.Session;
 import com.liferay.mobile.android.v62.portal.PortalService;
@@ -72,7 +73,7 @@ public class PortalVersionUtil {
 
 		Response response = client.newCall(request).execute();
 
-		String portalHeader = response.header("Liferay-Portal");
+		String portalHeader = response.header(HttpHeader.LIFERAY_PORTAL);
 
 		if (portalHeader == null) {
 			return PortalVersion.UNKNOWN;
