@@ -71,7 +71,7 @@ public class LayoutSetService extends BaseService {
 		session.invoke(_command);
 	}
 
-	public android.os.AsyncTask updateLogo(long groupId, boolean privateLayout, boolean logo, org.apache.http.entity.mime.content.InputStreamBody file) throws Exception {
+	public android.os.AsyncTask updateLogo(long groupId, boolean privateLayout, boolean logo, java.io.InputStream file) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {

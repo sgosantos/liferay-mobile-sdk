@@ -62,7 +62,7 @@ public class DLAppService extends BaseService {
 		return _result.getJSONObject(0);
 	}
 
-	public android.os.AsyncTask addFileEntry(long repositoryId, long folderId, String sourceFileName, String mimeType, String title, String description, String changeLog, org.apache.http.entity.mime.content.InputStreamBody file, JSONObjectWrapper serviceContext) throws Exception {
+	public android.os.AsyncTask addFileEntry(long repositoryId, long folderId, String sourceFileName, String mimeType, String title, String description, String changeLog, java.io.InputStream file, JSONObjectWrapper serviceContext) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {
@@ -140,7 +140,7 @@ public class DLAppService extends BaseService {
 		return _result.getJSONObject(0);
 	}
 
-	public android.os.AsyncTask addTempFileEntry(long groupId, long folderId, String fileName, String tempFolderName, org.apache.http.entity.mime.content.InputStreamBody file, String mimeType) throws Exception {
+	public android.os.AsyncTask addTempFileEntry(long groupId, long folderId, String fileName, String tempFolderName, java.io.InputStream file, String mimeType) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {
@@ -2416,7 +2416,7 @@ public class DLAppService extends BaseService {
 		return _result.getJSONObject(0);
 	}
 
-	public android.os.AsyncTask updateFileEntry(long fileEntryId, String sourceFileName, String mimeType, String title, String description, String changeLog, boolean majorVersion, org.apache.http.entity.mime.content.InputStreamBody file, JSONObjectWrapper serviceContext) throws Exception {
+	public android.os.AsyncTask updateFileEntry(long fileEntryId, String sourceFileName, String mimeType, String title, String description, String changeLog, boolean majorVersion, java.io.InputStream file, JSONObjectWrapper serviceContext) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {
@@ -2441,7 +2441,7 @@ public class DLAppService extends BaseService {
 		return session.upload(_command);
 	}
 
-	public android.os.AsyncTask updateFileEntryAndCheckIn(long fileEntryId, String sourceFileName, String mimeType, String title, String description, String changeLog, boolean majorVersion, org.apache.http.entity.mime.content.InputStreamBody file, JSONObjectWrapper serviceContext) throws Exception {
+	public android.os.AsyncTask updateFileEntryAndCheckIn(long fileEntryId, String sourceFileName, String mimeType, String title, String description, String changeLog, boolean majorVersion, java.io.InputStream file, JSONObjectWrapper serviceContext) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {

@@ -64,7 +64,7 @@ public class JournalTemplateService extends BaseService {
 		return _result.getJSONObject(0);
 	}
 
-	public android.os.AsyncTask addTemplate(long groupId, String templateId, boolean autoTemplateId, String structureId, JSONObject nameMap, JSONObject descriptionMap, String xsl, boolean formatXsl, String langType, boolean cacheable, boolean smallImage, String smallImageURL, org.apache.http.entity.mime.content.InputStreamBody smallFile, JSONObjectWrapper serviceContext) throws Exception {
+	public android.os.AsyncTask addTemplate(long groupId, String templateId, boolean autoTemplateId, String structureId, JSONObject nameMap, JSONObject descriptionMap, String xsl, boolean formatXsl, String langType, boolean cacheable, boolean smallImage, String smallImageURL, java.io.InputStream smallFile, JSONObjectWrapper serviceContext) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {
@@ -363,7 +363,7 @@ public class JournalTemplateService extends BaseService {
 		return _result.getJSONObject(0);
 	}
 
-	public android.os.AsyncTask updateTemplate(long groupId, String templateId, String structureId, JSONObject nameMap, JSONObject descriptionMap, String xsl, boolean formatXsl, String langType, boolean cacheable, boolean smallImage, String smallImageURL, org.apache.http.entity.mime.content.InputStreamBody smallFile, JSONObjectWrapper serviceContext) throws Exception {
+	public android.os.AsyncTask updateTemplate(long groupId, String templateId, String structureId, JSONObject nameMap, JSONObject descriptionMap, String xsl, boolean formatXsl, String langType, boolean cacheable, boolean smallImage, String smallImageURL, java.io.InputStream smallFile, JSONObjectWrapper serviceContext) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {

@@ -50,7 +50,7 @@ public class ShoppingItemService extends BaseService {
 		session.invoke(_command);
 	}
 
-	public android.os.AsyncTask addItem(long groupId, long categoryId, String sku, String name, String description, String properties, String fieldsQuantities, boolean requiresShipping, int stockQuantity, boolean featured, JSONObjectWrapper sale, boolean smallImage, String smallImageURL, org.apache.http.entity.mime.content.InputStreamBody smallFile, boolean mediumImage, String mediumImageURL, org.apache.http.entity.mime.content.InputStreamBody mediumFile, boolean largeImage, String largeImageURL, org.apache.http.entity.mime.content.InputStreamBody largeFile, JSONArray itemFields, JSONArray itemPrices, JSONObjectWrapper serviceContext) throws Exception {
+	public android.os.AsyncTask addItem(long groupId, long categoryId, String sku, String name, String description, String properties, String fieldsQuantities, boolean requiresShipping, int stockQuantity, boolean featured, JSONObjectWrapper sale, boolean smallImage, String smallImageURL, java.io.InputStream smallFile, boolean mediumImage, String mediumImageURL, java.io.InputStream mediumFile, boolean largeImage, String largeImageURL, java.io.InputStream largeFile, JSONArray itemFields, JSONArray itemPrices, JSONObjectWrapper serviceContext) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {
@@ -252,7 +252,7 @@ public class ShoppingItemService extends BaseService {
 		return _result.getJSONArray(0);
 	}
 
-	public android.os.AsyncTask updateItem(long itemId, long groupId, long categoryId, String sku, String name, String description, String properties, String fieldsQuantities, boolean requiresShipping, int stockQuantity, boolean featured, JSONObjectWrapper sale, boolean smallImage, String smallImageURL, org.apache.http.entity.mime.content.InputStreamBody smallFile, boolean mediumImage, String mediumImageURL, org.apache.http.entity.mime.content.InputStreamBody mediumFile, boolean largeImage, String largeImageURL, org.apache.http.entity.mime.content.InputStreamBody largeFile, JSONArray itemFields, JSONArray itemPrices, JSONObjectWrapper serviceContext) throws Exception {
+	public android.os.AsyncTask updateItem(long itemId, long groupId, long categoryId, String sku, String name, String description, String properties, String fieldsQuantities, boolean requiresShipping, int stockQuantity, boolean featured, JSONObjectWrapper sale, boolean smallImage, String smallImageURL, java.io.InputStream smallFile, boolean mediumImage, String mediumImageURL, java.io.InputStream mediumFile, boolean largeImage, String largeImageURL, java.io.InputStream largeFile, JSONArray itemFields, JSONArray itemPrices, JSONObjectWrapper serviceContext) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {

@@ -63,7 +63,7 @@ public class DDMTemplateService extends BaseService {
 		return _result.getJSONObject(0);
 	}
 
-	public android.os.AsyncTask addTemplate(long groupId, long classNameId, long classPK, String templateKey, JSONObject nameMap, JSONObject descriptionMap, String type, String mode, String language, String script, boolean cacheable, boolean smallImage, String smallImageURL, org.apache.http.entity.mime.content.InputStreamBody smallImageFile, JSONObjectWrapper serviceContext) throws Exception {
+	public android.os.AsyncTask addTemplate(long groupId, long classNameId, long classPK, String templateKey, JSONObject nameMap, JSONObject descriptionMap, String type, String mode, String language, String script, boolean cacheable, boolean smallImage, String smallImageURL, java.io.InputStream smallImageFile, JSONObjectWrapper serviceContext) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {
@@ -720,7 +720,7 @@ public class DDMTemplateService extends BaseService {
 		return _result.getInt(0);
 	}
 
-	public android.os.AsyncTask updateTemplate(long templateId, long classPK, JSONObject nameMap, JSONObject descriptionMap, String type, String mode, String language, String script, boolean cacheable, boolean smallImage, String smallImageURL, org.apache.http.entity.mime.content.InputStreamBody smallImageFile, JSONObjectWrapper serviceContext) throws Exception {
+	public android.os.AsyncTask updateTemplate(long templateId, long classPK, JSONObject nameMap, JSONObject descriptionMap, String type, String mode, String language, String script, boolean cacheable, boolean smallImage, String smallImageURL, java.io.InputStream smallImageFile, JSONObjectWrapper serviceContext) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {
